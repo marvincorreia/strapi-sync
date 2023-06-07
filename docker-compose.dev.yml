@@ -1,0 +1,16 @@
+version: '3.7'
+
+services: 
+  web:
+    image: node:18.15.0
+    ports: 
+      - 1337:1337
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: /bin/bash -c "yarn && yarn develop"
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
+      
