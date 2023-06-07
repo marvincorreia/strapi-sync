@@ -1,4 +1,5 @@
-# Strapi auto update
+# Strapi Sync
+This project shows how to configure the synchronization of a strapi project with the repository "CICD", with updates from time to time in order to ensure that the generated data is up to date and that the developers can interact with the application installed on a remote server.
 
 ## Configure docker-compose file
 
@@ -91,7 +92,7 @@ Copy the public key generated to the repository ssh keys configuration to allow 
 cat ~/.ssh/id_rsa.pub
 ```
 
-# Ensure that the origin url is ssh instead https
+## Ensure that the origin url is ssh instead https
 ```
 git remote -v
 ```
