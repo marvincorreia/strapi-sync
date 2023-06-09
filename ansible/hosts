@@ -1,0 +1,1 @@
+myserver ansible_host=127.0.0.1 ansible_user=myuser ansible_ssh_port=22

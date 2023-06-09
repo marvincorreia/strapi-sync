@@ -1,0 +1,54 @@
+# Ansible playbook
+---
+- hosts: "{{ hosts }}"
+  gather_facts: false
+  # become: true
+  vars:
+    strapi_path: "{{ strapi_path }}"
+    repo_ssh_url: "{{ repo_ssh_url }}"
+  tasks:
+    - name: Copy files to strapi app in remote server
+      copy:
+        src: "{{ item }}"
+        dest: "{{ strapi_path }}"
+      with_items: 
+        - ../docker-compose.dev.yml
+        - ../strapi-sync.sh
+    
+    - name: Make script executable
+      become: true
+      shell: chmod +x strapi-sync.sh
+      args:
+        chdir: "{{ strapi_path }}"
+
+    - name: Set repository SSH URL
+      shell: "git remote set-url origin '{{ repo_ssh_url }}'"
+      args:
+        chdir: "{{ strapi_path }}"
+      when: repo_ssh_url is defined and repo_ssh_url != ''
+    
+    - name: Add cron job
+      cron:
+        name: Run strapi-sync.sh every 5 minutes
+        minute: "*/5"
+        job: "{{ strapi_path }}strapi-sync.sh"
+
+    - name: Run strapi app
+      shell: docker-compose -f docker-compose.dev.yml up -d
+      args:
+        chdir: "{{ strapi_path }}"
+
+    - name: Check if SSH public key file exists
+      stat:
+        path: ~/.ssh/id_rsa.pub
+      register: ssh_key_file
+
+    - name: Generate SSH key pair without passphrase if ssh keys not exist
+      command: ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -N ""
+      when: not ssh_key_file.stat.exists
+
+    - name: Print SSH public key (copy the result to your repository allowed ssh keys)
+      debug:
+        msg: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+    
