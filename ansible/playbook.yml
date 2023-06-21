@@ -48,7 +48,11 @@
       when: not ssh_key_file.stat.exists
 
     - name: Print SSH public key (copy the result to your repository allowed ssh keys)
+      command: cat ~/.ssh/id_rsa.pub
+      register: command_output  
+    
+    - name: Debug output
       debug:
-        msg: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        var: command_output.stdout_lines
 
     
