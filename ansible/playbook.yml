@@ -31,7 +31,7 @@
       cron:
         name: Run strapi-sync.sh every 5 minutes
         minute: "*/5"
-        job: "{{ strapi_path }}strapi-sync.sh"
+        job: "cd {{ strapi_path }} && strapi-sync.sh"
 
     - name: Run strapi app
       shell: docker-compose -f docker-compose.dev.yml up -d
